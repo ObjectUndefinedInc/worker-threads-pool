@@ -1,0 +1,29 @@
+{
+  "name": "worker-threads-pool",
+  "version": "1.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc && node --max-old-space-size=8192 build/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ObjectUndefinedInc/worker-threads-pool.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ObjectUndefinedInc/worker-threads-pool.git/issues"
+  },
+  "homepage": "https://github.com/ObjectUndefinedInc/worker-threads-pool.git#readme",
+  "devDependencies": {
+    "@types/node": "^18.11.10",
+    "prettier": "^2.4.1",
+    "ts-node": "^10.2.1",
+    "tsc": "^2.0.3",
+    "typescript": "^4.4.3"
+  }
+}

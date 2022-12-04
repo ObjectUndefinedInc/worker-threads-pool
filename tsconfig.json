@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+      "module": "CommonJS",
+      "resolveJsonModule": true,
+      "moduleResolution": "node",
+      "noImplicitAny": true,
+      "preserveConstEnums": true,
+      "outDir": "./build/",
+      "inlineSourceMap": true,
+      "target": "es2017",
+      "forceConsistentCasingInFileNames": true,
+      "noImplicitReturns": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "strict": true,
+      "noFallthroughCasesInSwitch": true,
+      "strictNullChecks": true,
+      "suppressImplicitAnyIndexErrors": true,
+      "noImplicitThis": true
+    },
+    "include": ["./src/**/*"],
+    "exclude": ["node_modules"]
+  }
+  
