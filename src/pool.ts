@@ -59,24 +59,27 @@ export const createPool = <TTask, TResult>({
       if (spawnAmount > 0) {
         for (let i = 0; i < spawnAmount; i++) {
           const task = _queue.dequeue()
+          if (!task) {
+            return
+          }
 
           const worker = createWorker(handler, task)
           _workers.add(worker.id)
 
           worker.result
             .then(res => {
-              _workers.delete(worker.id)
               _result.push(res.payload)
               onResult?.(res.payload)
             })
             .catch(err => {
-              _workers.delete(worker.id)
               onError?.(err)
               if (!tolerateErrors) {
                 _reject(err)
               }
             })
             .finally(() => {
+              _workers.delete(worker.id)
+
               setImmediate(() => worker.destroy())
               if (++_finishedTasks === tasks.length) {
                 _isRunning = false
