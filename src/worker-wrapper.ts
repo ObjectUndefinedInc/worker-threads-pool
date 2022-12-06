@@ -15,18 +15,22 @@ const stringifyHandler = (fn: Function): string => {
 }
 
 export const createWorker = <TData, TResult>(
-  id: string | number,
   handler: (data: TData) => TResult,
   data: TData
-) =>
-  new Promise<WorkerResult<TResult>>((resolve, reject) => {
-    const workerData = {
-      id,
-      handler: stringifyHandler(handler),
-      data,
-    }
-
-    const worker = new Worker('./build/worker.js', { workerData })
+) => {
+  const workerData = {
+    handler: stringifyHandler(handler),
+    data,
+  }
+  const worker = new Worker('./build/worker.js', { workerData })
+  const result = new Promise<WorkerResult<TResult>>((resolve, reject) => {
     worker.on('message', (m: WorkerResult<TResult>) => resolve(m))
     worker.on('error', err => reject(err))
   })
+
+  return {
+    id: worker.threadId,
+    result,
+    destroy: () => worker.terminate(),
+  }
+}

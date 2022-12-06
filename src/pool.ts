@@ -23,8 +23,6 @@ export const createPool = <TTask, TResult>({
   let _isRunning = false
   let _finishedTasks = 0
 
-  let _currentWorkerId = 0
-
   const _queue = createQueue(tasks)
   const _workers = new Set<number>()
   const _result: TResult[] = []
@@ -50,45 +48,46 @@ export const createPool = <TTask, TResult>({
     return promise
   }
 
-  const allocate = () => {
-    if (_queue.isEmpty()) {
-      return
-    }
-
-    const spawnAmount = threads - _workers.size
-
-    if (spawnAmount > 0) {
-      for (let i = 0; i < spawnAmount; i++) {
-        const task = _queue.dequeue()
-        const workerId = _currentWorkerId++
-
-        const worker = createWorker(workerId, handler, task)
-        _workers.add(workerId)
-
-        worker
-          .then(res => {
-            _workers.delete(workerId)
-            _result.push(res.payload)
-            onResult?.(res.payload)
-          })
-          .catch(err => {
-            _workers.delete(workerId)
-            onError?.(err)
-            if (!tolerateErrors) {
-              _reject(err)
-            }
-          })
-          .finally(() => {
-            if (++_finishedTasks === tasks.length) {
-              _isRunning = false
-              _resolve(_result)
-            } else {
-              allocate()
-            }
-          })
+  const allocate = () =>
+    setImmediate(() => {
+      if (_queue.isEmpty()) {
+        return
       }
-    }
-  }
+
+      const spawnAmount = threads - _workers.size
+
+      if (spawnAmount > 0) {
+        for (let i = 0; i < spawnAmount; i++) {
+          const task = _queue.dequeue()
+
+          const worker = createWorker(handler, task)
+          _workers.add(worker.id)
+
+          worker.result
+            .then(res => {
+              _workers.delete(worker.id)
+              _result.push(res.payload)
+              onResult?.(res.payload)
+            })
+            .catch(err => {
+              _workers.delete(worker.id)
+              onError?.(err)
+              if (!tolerateErrors) {
+                _reject(err)
+              }
+            })
+            .finally(() => {
+              setImmediate(() => worker.destroy())
+              if (++_finishedTasks === tasks.length) {
+                _isRunning = false
+                _resolve(_result)
+              } else {
+                allocate()
+              }
+            })
+        }
+      }
+    })
 
   return {
     start,

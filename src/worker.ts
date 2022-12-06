@@ -5,19 +5,16 @@ if (isMainThread) {
 }
 
 type WorkerData = {
-  id: string | number
   handler: string
   data: any
 }
 
-const { id, handler, data }: WorkerData = workerData
-console.log(`::: Worker ${id} processing data`)
+const { handler, data }: WorkerData = workerData
 
 const handle = eval(handler)
 const result = handle(data)
 
 parentPort?.postMessage({
-  id,
   payload: result,
   result: true,
 })

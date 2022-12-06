@@ -23,7 +23,7 @@ export const createQueue = <T>(data?: T[]) => {
 
   const isEmpty = () => length() === 0
 
-  data && data.forEach(enqueue)
+  data?.forEach(enqueue)
 
   return {
     enqueue,
