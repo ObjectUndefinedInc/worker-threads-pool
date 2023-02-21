@@ -1,17 +1,6 @@
+import { PoolParams } from '.'
 import { createQueue } from './queue'
 import { createWorker } from './worker-wrapper'
-
-type PoolParams<TTask, TResult> = {
-  handler: (task: TTask) => TResult
-  tasks: TTask[]
-  opts: {
-    threads: number
-    tolerateErrors?: boolean
-    onResult?: (res: TResult) => void
-    onError?: (err: any) => void
-    onDone?: (res: TResult[]) => void
-  }
-}
 
 export const createPool = <TTask, TResult>({
   handler,
